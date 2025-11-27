@@ -1,0 +1,57 @@
+# Example configuration for permissive protection
+# Use this for monitoring/testing or low-risk environments
+
+[general]
+interface = "eth0"
+xdp_mode = "native"
+timeout = 0
+
+[ports]
+# Protect common ports
+ports_to_protect = "80,443"
+
+[per_ip_limits]
+# Very high limits - mainly for logging/monitoring
+per_ip_pps_limit = 100000         # 100k packets/sec
+per_ip_syn_pps_limit = 5000       # 5k SYN/sec
+per_ip_udp_pps_limit = 50000      # 50k UDP packets/sec
+per_ip_udp_bps_limit = 1073741824 # 1 GB/s UDP (effectively unlimited)
+per_ip_bps_limit = 2147483648     # 2 GB/s total (effectively unlimited)
+action = "pass"                   # Log but don't drop
+
+[per_flow_limits]
+# High per-flow limits
+per_flow_pps_limit = 50000
+per_flow_syn_pps_limit = 2000
+per_flow_udp_pps_limit = 25000
+per_flow_udp_bps_limit = 536870912  # 512 MB/s
+per_flow_bps_limit = 1073741824     # 1 GB/s
+action = "pass"                     # Log but don't drop
+
+[whitelist]
+# Empty whitelist - not needed with permissive config
+preload_whitelist_file = "/etc/slice-xdp/whitelist.txt"
+
+[blacklist]
+# Still block known malicious IPs
+preload_blacklist_file = "/etc/slice-xdp/blacklist.txt"
+
+[alerting]
+alert = "log"
+log_file = "/var/log/slice-xdp/permissive.log"
+webhook_url = ""
+
+[alerting.enable]
+# Log everything for analysis
+per_ip_pps = true
+per_ip_syn_pps = true
+per_ip_udp_pps = true
+per_ip_udp_bps = true
+per_ip_bps = true
+per_flow_pps = true
+per_flow_syn_pps = true
+per_flow_udp_pps = true
+per_flow_udp_bps = true
+per_flow_bps = true
+other = true
+

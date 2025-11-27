@@ -1,0 +1,5 @@
+# Blacklist - IPv4 or CIDR, one per line
+# Example entries:
+# 192.0.2.1
+# 198.51.100.0/24
+

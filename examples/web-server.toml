@@ -1,0 +1,57 @@
+# Example configuration for protecting a web server
+# Protects HTTP (80) and HTTPS (443) ports
+
+[general]
+interface = "eth0"
+xdp_mode = "native"
+timeout = 0
+
+[ports]
+# Protect web server ports
+ports_to_protect = "80,443"
+
+[per_ip_limits]
+# Generous limits for legitimate users
+# But strict enough to prevent basic attacks
+per_ip_pps_limit = 20000          # 20k packets/sec per IP
+per_ip_syn_pps_limit = 200        # Prevent SYN flood
+per_ip_udp_pps_limit = 5000       # Low UDP (web is mostly TCP)
+per_ip_udp_bps_limit = 10485760   # 10 MB/s UDP
+per_ip_bps_limit = 104857600      # 100 MB/s total bandwidth
+action = "drop"
+
+[per_flow_limits]
+# Per-connection limits
+per_flow_pps_limit = 10000
+per_flow_syn_pps_limit = 100
+per_flow_udp_pps_limit = 2500
+per_flow_udp_bps_limit = 5242880   # 5 MB/s
+per_flow_bps_limit = 52428800      # 50 MB/s
+action = "drop"
+
+[whitelist]
+# Add your CDN IPs, monitoring services, etc.
+preload_whitelist_file = "/etc/slice-xdp/whitelist.txt"
+
+[blacklist]
+# Block known malicious IPs
+preload_blacklist_file = "/etc/slice-xdp/blacklist.txt"
+
+[alerting]
+alert = "log"
+log_file = "/var/log/slice-xdp/web-server.log"
+webhook_url = ""
+
+[alerting.enable]
+per_ip_pps = true
+per_ip_syn_pps = true
+per_ip_udp_pps = true
+per_ip_udp_bps = true
+per_ip_bps = true
+per_flow_pps = true
+per_flow_syn_pps = true
+per_flow_udp_pps = false
+per_flow_udp_bps = false
+per_flow_bps = true
+other = true
+

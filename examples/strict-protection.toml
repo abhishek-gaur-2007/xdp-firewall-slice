@@ -1,0 +1,58 @@
+# Example configuration for strict protection
+# Use this for high-risk environments or during active attacks
+
+[general]
+interface = "eth0"
+xdp_mode = "native"
+timeout = 0
+
+[ports]
+# Protect multiple services
+ports_to_protect = "22,80,443,3306"
+
+[per_ip_limits]
+# Very strict limits
+per_ip_pps_limit = 5000           # Low packet rate
+per_ip_syn_pps_limit = 50         # Very strict SYN limit
+per_ip_udp_pps_limit = 2000       # Minimal UDP
+per_ip_udp_bps_limit = 5242880    # 5 MB/s UDP
+per_ip_bps_limit = 20971520       # 20 MB/s total
+action = "drop"
+
+[per_flow_limits]
+# Strict per-connection limits
+per_flow_pps_limit = 2000
+per_flow_syn_pps_limit = 25
+per_flow_udp_pps_limit = 1000
+per_flow_udp_bps_limit = 2621440   # 2.5 MB/s
+per_flow_bps_limit = 10485760      # 10 MB/s
+action = "drop"
+
+[whitelist]
+# IMPORTANT: Add your own IP before enabling!
+# Otherwise you might lock yourself out
+preload_whitelist_file = "/etc/slice-xdp/whitelist.txt"
+
+[blacklist]
+# Aggressive blacklisting
+preload_blacklist_file = "/etc/slice-xdp/blacklist.txt"
+
+[alerting]
+alert = "webhook+log"
+log_file = "/var/log/slice-xdp/strict.log"
+webhook_url = "https://discord.com/api/webhooks/YOUR/WEBHOOK"
+
+[alerting.enable]
+# Enable all alerts
+per_ip_pps = true
+per_ip_syn_pps = true
+per_ip_udp_pps = true
+per_ip_udp_bps = true
+per_ip_bps = true
+per_flow_pps = true
+per_flow_syn_pps = true
+per_flow_udp_pps = true
+per_flow_udp_bps = true
+per_flow_bps = true
+other = true
+

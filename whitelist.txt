@@ -1,0 +1,6 @@
+# Whitelist - IPv4 or CIDR, one per line
+# Example entries:
+# 127.0.0.1
+# 192.168.1.0/24
+# 10.0.0.1
+

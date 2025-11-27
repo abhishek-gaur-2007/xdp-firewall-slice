@@ -1,0 +1,26 @@
+[Unit]
+Description=Slice-XDP Firewall
+Documentation=https://github.com/yourusername/xdp-firewall
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/slice-xdp -i eth0 -d native -c /etc/slice-xdp/config.toml
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=slice-xdp
+
+# Security hardening
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/slice-xdp
+RuntimeDirectory=slice-xdp
+
+[Install]
+WantedBy=multi-user.target
+

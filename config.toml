@@ -1,0 +1,71 @@
+# Slice-XDP Firewall Configuration
+
+[general]
+# Network interface to attach XDP program
+interface = "eth0"
+# XDP mode: native or generic
+xdp_mode = "native"
+# Timeout in seconds (0 = run indefinitely)
+timeout = 0
+
+[ports]
+# Ports to protect (single, multiple, or range)
+# Examples: "80", "80,443,25565", "1000-5000"
+ports_to_protect = "80,443"
+
+[per_ip_limits]
+# Per-IP rate limits
+# Set to 0 to disable a limit
+per_ip_pps_limit = 10000          # Total packets per second
+per_ip_syn_pps_limit = 100        # SYN packets per second
+per_ip_udp_pps_limit = 5000       # UDP packets per second
+per_ip_udp_bps_limit = 10485760   # UDP bytes per second (10 MB/s)
+per_ip_bps_limit = 52428800       # Total bytes per second (50 MB/s)
+
+# Action: pass or drop
+action = "drop"
+
+[per_flow_limits]
+# Per-flow rate limits (flow = srcip, dstip, proto, sport, dport)
+# Set to 0 to disable a limit
+per_flow_pps_limit = 5000         # Total packets per second
+per_flow_syn_pps_limit = 50       # SYN packets per second
+per_flow_udp_pps_limit = 2500     # UDP packets per second
+per_flow_udp_bps_limit = 5242880  # UDP bytes per second (5 MB/s)
+per_flow_bps_limit = 10485760     # Total bytes per second (10 MB/s)
+
+# Action: pass or drop
+action = "drop"
+
+[whitelist]
+# Whitelist file (IPv4 or CIDR, one per line)
+# Whitelisted IPs skip all rate limits
+preload_whitelist_file = "./whitelist.txt"
+
+[blacklist]
+# Blacklist file (IPv4 or CIDR, one per line)
+# Blacklisted IPs are instantly dropped
+preload_blacklist_file = "./blacklist.txt"
+
+[alerting]
+# Alert mode: none, log, or webhook+log
+alert = "log"
+# Log file path
+log_file = "/var/log/slice-xdp/slice-xdp.log"
+# Discord webhook URL (required if alert = webhook+log)
+webhook_url = ""
+
+# Enable/disable alerts per limit type
+[alerting.enable]
+per_ip_pps = true
+per_ip_syn_pps = true
+per_ip_udp_pps = true
+per_ip_udp_bps = true
+per_ip_bps = true
+per_flow_pps = true
+per_flow_syn_pps = true
+per_flow_udp_pps = true
+per_flow_udp_bps = true
+per_flow_bps = true
+other = true
+

@@ -1,0 +1,25 @@
+# Binaries
+start
+xdp_firewall.o
+*.o
+*.so
+
+# Go
+go.sum
+vendor/
+
+# Logs
+*.log
+/var/log/slice-xdp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

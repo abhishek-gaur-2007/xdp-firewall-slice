@@ -1,0 +1,58 @@
+# Example configuration for protecting a game server
+# Optimized for Minecraft (25565) but adaptable to other games
+
+[general]
+interface = "eth0"
+xdp_mode = "native"
+timeout = 0
+
+[ports]
+# Minecraft default port
+# Change to your game's port(s)
+ports_to_protect = "25565"
+
+[per_ip_limits]
+# Game servers need different tuning than web servers
+# Most game traffic is UDP with consistent packet rates
+per_ip_pps_limit = 5000           # Lower than web (games send many small packets)
+per_ip_syn_pps_limit = 50         # Lower TCP (most traffic is UDP)
+per_ip_udp_pps_limit = 4000       # Primary limit for game traffic
+per_ip_udp_bps_limit = 20971520   # 20 MB/s (game data + voice chat)
+per_ip_bps_limit = 31457280       # 30 MB/s total
+action = "drop"
+
+[per_flow_limits]
+# Per-player connection limits
+per_flow_pps_limit = 2500
+per_flow_syn_pps_limit = 25
+per_flow_udp_pps_limit = 2000
+per_flow_udp_bps_limit = 10485760  # 10 MB/s
+per_flow_bps_limit = 15728640      # 15 MB/s
+action = "drop"
+
+[whitelist]
+# Add server admins, trusted players
+preload_whitelist_file = "/etc/slice-xdp/whitelist.txt"
+
+[blacklist]
+# Block known attackers, cheaters
+preload_blacklist_file = "/etc/slice-xdp/blacklist.txt"
+
+[alerting]
+alert = "webhook+log"
+log_file = "/var/log/slice-xdp/game-server.log"
+webhook_url = "https://discord.com/api/webhooks/YOUR/WEBHOOK"
+
+[alerting.enable]
+per_ip_pps = true
+per_ip_syn_pps = true
+per_ip_udp_pps = true
+per_ip_udp_bps = true
+per_ip_bps = true
+per_flow_pps = true
+per_flow_syn_pps = false
+per_flow_udp_pps = true
+per_flow_udp_bps = true
+per_flow_bps = true
+other = true
+
